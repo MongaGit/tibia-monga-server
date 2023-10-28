@@ -11,8 +11,7 @@ services:
       MYSQL_USER: ${DATABASE_USER}
       MYSQL_PASSWORD: ${DATABASE_PASSWORD}
       MYSQL_ROOT_PASSWORD: noob
-    networks:
-      - otserver
+
     ports:
       - 3306:3306
     volumes:
@@ -32,8 +31,7 @@ services:
         apt install libgomp1 && \
         ./canary
       "
-    networks:
-      - otserver
+
     ports:
       - 7171:7171
       - 7172:7172      
@@ -52,8 +50,7 @@ services:
       MYSQL_USER: ${DATABASE_USER}
       MYSQL_PASSWORD: ${DATABASE_PASSWORD}
       MYSQL_ROOT_PASSWORD: noob      
-    networks:
-      - otserver
+
     ports:
       - 9090:80
 
@@ -66,18 +63,10 @@ services:
     environment:
       DOCKER_NETWORK_GATEWAY: ${DOCKER_NETWORK_GATEWAY}
       OT_SERVER_NAME: ${SERVER_NAME}
-    networks:
-      - otserver
+
     ports:
       - 8080:80
     volumes:
       - ${PWD}/site/:/var/www/html
       - ${PWD}/server/:/home/server     # mapeamento necessario se for configurar Gesior2012 ou myAAC
 
-networks:
-  otserver:
-    driver: bridge
-    ipam:
-     config:
-       - subnet: ${DOCKER_NETWORK_CIDR}
-         gateway: ${DOCKER_NETWORK_GATEWAY}

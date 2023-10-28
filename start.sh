@@ -6,8 +6,8 @@ export DATABASE_NAME=otservdb
 export DATABASE_USER=otserv
 export DATABASE_PASSWORD=noob
 
-export DOCKER_NETWORK_GATEWAY=127.0.0.1
-export DOCKER_NETWORK_CIDR=127.0.0.0/20
+export DOCKER_NETWORK_GATEWAY=172.24.0.1
+export DOCKER_NETWORK_CIDR=172.24.0.0/16
 
 ################################
 #### como executar o script ####
@@ -51,7 +51,7 @@ do
         unzip -o -d server/ server/canary-v2.6.1-ubuntu-22.04-executable+server.zip &> /dev/null
         rm -r server/canary-v2.6.1-ubuntu-22.04-executable+server.zip
         chmod +x server/canary
-        echo "[INFO] download concluído e extraído em 'otserver/server/'!"
+        echo "[INFO] download concluído e extraído em 'tibia-monga-server/server/'!"
         download=true
     fi
 
@@ -61,14 +61,14 @@ do
         # avalia se o arquivo 'server/schema.sql' existe
         # caso negativo, a execução do script é interrompida
         if [ ! -f "server/schema.sql" ]; then
-            echo "[ERROR] arquivo 'otserver/server/schema.sql' não encontrado"
+            echo "[ERROR] arquivo 'tibia-monga-server/server/schema.sql' não encontrado"
             exit 1
         fi
 
         # !!!!!!
         # remove o schema antigo de 'sql/00_schema.sql'
         # copia o 'server/schema.sql' para 'sql/00_schema.sql'
-        echo "[INFO] copiando schema 'otserver/server/schema.sql' para 'otserver/sql/00_schema.sql'"
+        echo "[INFO] copiando schema 'tibia-monga-server/server/schema.sql' para 'otserver/sql/00_schema.sql'"
         rm -r sql/00_schema.sql &> /dev/null
         cp server/schema.sql sql/00_schema.sql
         schema=true
@@ -92,7 +92,7 @@ fi
 # verifica se o arquivo 'sql/00_schema.sql' existe antes de iniciar o servidor
 # copia o 'server/schema.sql' para 'sql/00_schema.sql'
 if [ ! -f "sql/00_schema.sql" ] && [ -f "server/schema.sql" ]; then
-    echo "[INFO] copiando schema 'otserver/server/schema.sql' para 'otserver/sql/00_schema.sql'"
+    echo "[INFO] copiando schema 'tibia-monga-server/server/schema.sql' para 'otserver/sql/00_schema.sql'"
     cp server/schema.sql sql/00_schema.sql
 fi
 
@@ -102,12 +102,12 @@ fi
 docker-compose up -d
 
 # substituindo valores no arquivo config.lua
-sed -i "s/^serverName\s=\s.*\"$/serverName = \"$SERVER_NAME\"/g" server/config.lua
-sed -i "s/^mysqlHost\s=\s.*\"$/mysqlHost = \"$DOCKER_NETWORK_GATEWAY\"/g" server/config.lua
-sed -i "s/^mysqlUser\s=\s.*\"$/mysqlUser = \"$DATABASE_USER\"/g" server/config.lua
-sed -i "s/^mysqlPass\s=\s.*\"$/mysqlPass = \"$DATABASE_PASSWORD\"/g" server/config.lua
-sed -i "s/^mysqlDatabase\s=\s.*\"$/mysqlDatabase = \"$DATABASE_NAME\"/g" server/config.lua
-sed -i "s/^ip\s=\s.*\"$/ip = \"$DOCKER_NETWORK_GATEWAY\"/g" server/config.lua
+sed -i "s/^serverName\s=\s.*\"$/serverName = \"$SERVER_NAME\"/g" server/config.lua.dist
+sed -i "s/^mysqlHost\s=\s.*\"$/mysqlHost = \"$DOCKER_NETWORK_GATEWAY\"/g" server/config.lua.dist
+sed -i "s/^mysqlUser\s=\s.*\"$/mysqlUser = \"$DATABASE_USER\"/g" server/config.lua.dist
+sed -i "s/^mysqlPass\s=\s.*\"$/mysqlPass = \"$DATABASE_PASSWORD\"/g" server/config.lua.dist
+sed -i "s/^mysqlDatabase\s=\s.*\"$/mysqlDatabase = \"$DATABASE_NAME\"/g" server/config.lua.dist
+sed -i "s/^ip\s=\s.*\"$/ip = \"$DOCKER_NETWORK_GATEWAY\"/g" server/config.lua.dist
 
 # substituindo valores no arquivo login.php
 sed -i "s/^\$databaseURL\s.*=\s.*;$/\$databaseURL = \"$DOCKER_NETWORK_GATEWAY\";/g" site/login.php
